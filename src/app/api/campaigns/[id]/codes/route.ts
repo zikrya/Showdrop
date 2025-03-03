@@ -3,14 +3,21 @@ import { addDiscountCodesSchema } from "@/lib/validation";
 import { db } from "@/lib/db";
 import { discountCodes } from "@/lib/schema";
 
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export async function POST(req: Request) {
   try {
+    const { pathname } = new URL(req.url);
+    const id = pathname.split("/").at(-2);
+
+    if (!id) {
+      return NextResponse.json({ error: "Campaign ID is missing" }, { status: 400 });
+    }
+
     const body = await req.json();
     const parsedBody = addDiscountCodesSchema.parse(body);
 
     const insertedCodes = await db.insert(discountCodes).values(
       parsedBody.codes.map((code: string) => ({
-        campaignId: params.id,
+        campaignId: id,
         code,
       }))
     ).returning();
