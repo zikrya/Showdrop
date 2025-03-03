@@ -4,14 +4,15 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { claimDiscountSchema } from "../lib/validation";
-import { claimDiscount } from "../lib/actions";
-import { z } from "zod";
+import { claimDiscountAction } from "../lib/actions";
+import { useRouter } from "next/navigation";
+import { z } from "zod"
 
 type CampaignFormValues = z.infer<typeof claimDiscountSchema>;
 
 export default function CampaignForm({ campaignId }: { campaignId: string }) {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const {
@@ -25,18 +26,17 @@ export default function CampaignForm({ campaignId }: { campaignId: string }) {
   const onSubmit = async (data: CampaignFormValues) => {
     setIsSubmitting(true);
     setError(null);
-    setSuccess(null);
 
     try {
-      const response = await claimDiscount(campaignId, data.email);
-      if (response.error) throw new Error(response.error);
-      setSuccess(response.code);
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("An unknown error occurred");
+      const response = await claimDiscountAction(campaignId, data.email);
+
+      if (response?.error) {
+        setError(response.error);
+      } else if (response?.redirectUrl) {
+        router.push(response.redirectUrl);
       }
+    } catch (err: any) {
+      setError("An error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -64,7 +64,6 @@ export default function CampaignForm({ campaignId }: { campaignId: string }) {
       </button>
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
-      {success && <p className="text-green-500 text-sm">Your discount code: {success}</p>}
     </form>
   );
 }
