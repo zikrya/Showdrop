@@ -8,9 +8,10 @@ export const campaigns = pgTable("campaigns", {
 });
 
 export const discountCodes = pgTable("discount_codes", {
-  id: serial("id").primaryKey(),
-  campaignId: uuid("campaign_id").references(() => campaigns.id),
-  code: text("code").unique().notNull(),
-  assignedToEmail: text("assigned_to_email").unique(),
-  assignedAt: timestamp("assigned_at"),
-});
+    id: uuid("id").primaryKey().defaultRandom(),
+    campaignId: uuid("campaign_id").notNull(),
+    code: text("code").notNull(),
+    assignedToEmail: text("assigned_to_email"),
+    assignedAt: timestamp("assigned_at"),
+    lastClaimedAt: timestamp("last_claimed_at"),
+  });
