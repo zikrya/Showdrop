@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { claimDiscountSchema } from "../lib/validation";
 import { claimDiscountAction } from "../lib/actions";
 import { useRouter } from "next/navigation";
-import { z } from "zod"
+import { z } from "zod";
 
 type CampaignFormValues = z.infer<typeof claimDiscountSchema>;
 
@@ -35,8 +35,12 @@ export default function CampaignForm({ campaignId }: { campaignId: string }) {
       } else if (response?.redirectUrl) {
         router.push(response.redirectUrl);
       }
-    } catch (err: any) {
-      setError("An error occurred. Please try again.");
+    } catch (_err: unknown) {
+      if (_err instanceof Error) {
+        setError(_err.message);
+      } else {
+        setError("An error occurred. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }
