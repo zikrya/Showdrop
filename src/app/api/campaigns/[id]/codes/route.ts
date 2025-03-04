@@ -14,7 +14,6 @@ export async function POST(req: Request) {
 
     const userId = authResult.userId;
 
-    // Extract campaign ID from URL
     const { pathname } = new URL(req.url);
     const campaignId = pathname.split("/").at(-2);
     if (!campaignId) {
@@ -64,18 +63,25 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Campaign ID is missing" }, { status: 400 });
     }
 
+    const [campaign] = await db.select().from(campaigns).where(eq(campaigns.id, id)).limit(1);
+    if (!campaign) {
+      return NextResponse.json({ error: "Campaign not found" }, { status: 404 });
+    }
+
     const codes = await db.select().from(discountCodes).where(eq(discountCodes.campaignId, id));
 
     return NextResponse.json({
-      total: codes.length,
-      claimed: codes.filter((c) => c.assignedToEmail !== null).length,
-      remaining: codes.filter((c) => c.assignedToEmail === null).length,
+      campaign,
+      stats: {
+        total: codes.length,
+        claimed: codes.filter((c) => c.assignedToEmail !== null).length,
+        remaining: codes.filter((c) => c.assignedToEmail === null).length,
+      },
       codes,
     });
-  } catch (err: unknown) {
-    if (err instanceof Error) {
-      return NextResponse.json({ error: err.message }, { status: 400 });
-    }
-    return NextResponse.json({ error: "An unexpected error occurred" }, { status: 500 });
+
+  } catch (error) {
+    console.error("Error fetching campaign data:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

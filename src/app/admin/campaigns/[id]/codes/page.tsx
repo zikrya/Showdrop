@@ -27,20 +27,13 @@ export default function AdminCampaignCodesPage() {
       if (!id) return;
 
       try {
-        // Fetch campaign details
-        const campaignRes = await fetch(`/api/campaigns/${id}`);
-        if (!campaignRes.ok) throw new Error("Failed to fetch campaign details");
-        const campaignData = await campaignRes.json();
-        setCampaign(campaignData);
+        const res = await fetch(`/api/campaigns/${id}/codes`);
+        if (!res.ok) throw new Error("Failed to fetch campaign details");
 
-        // Fetch discount codes
-        const codesRes = await fetch(`/api/campaigns/${id}/codes`);
-        if (!codesRes.ok) throw new Error("Failed to fetch discount codes");
-
-        const codesData = await codesRes.json();
-        setCodes(codesData.codes);
-        setStats({ total: codesData.total, claimed: codesData.claimed, remaining: codesData.remaining });
-
+        const data = await res.json();
+        setCampaign(data.campaign);
+        setCodes(data.codes);
+        setStats(data.stats);
       } catch (err) {
         console.error("Error fetching campaign data:", err);
         setError("Failed to load campaign data.");
@@ -54,10 +47,17 @@ export default function AdminCampaignCodesPage() {
 
   return (
     <div className="max-w-2xl mx-auto p-6">
-      {loading && <p>Loading campaign data...</p>}
-      {error && <p className="text-red-500">{error}</p>}
+      {loading && (
+        <div className="animate-pulse">
+          <div className="bg-gray-300 h-8 w-3/4 rounded mb-4"></div>
+          <div className="bg-gray-200 h-4 w-1/2 rounded mb-6"></div>
+          <div className="bg-gray-200 h-20 w-full rounded"></div>
+        </div>
+      )}
 
-      {campaign && (
+      {!loading && error && <p className="text-red-500">{error}</p>}
+
+      {!loading && campaign && (
         <div className="bg-white shadow-lg rounded-lg p-4 mb-6">
           <h1 className="text-2xl font-semibold">{campaign.name}</h1>
           <p className="text-gray-600">{campaign.description || "No description provided."}</p>
@@ -65,12 +65,16 @@ export default function AdminCampaignCodesPage() {
         </div>
       )}
 
-      {stats && <CodeList codes={codes} total={stats.total} claimed={stats.claimed} remaining={stats.remaining} />}
+      {!loading && stats && (
+        <CodeList codes={codes} total={stats.total} claimed={stats.claimed} remaining={stats.remaining} />
+      )}
 
-      <AddCodesForm
-        campaignId={id}
-        onCodesAdded={(newCodes) => setCodes([...codes, ...newCodes.map((code) => ({ code, assignedToEmail: null }))])}
-      />
+      {!loading && (
+        <AddCodesForm
+          campaignId={id}
+          onCodesAdded={(newCodes) => setCodes([...codes, ...newCodes.map((code) => ({ code, assignedToEmail: null }))])}
+        />
+      )}
     </div>
   );
 }
