@@ -17,7 +17,7 @@ export async function GET() {
     return new NextResponse("User does not exist", { status: 404 });
   }
 
-  let dbUser = await db.query.users.findFirst({
+  const dbUser = await db.query.users.findFirst({
     where: eq(users.clerkId, user.id),
   });
 
