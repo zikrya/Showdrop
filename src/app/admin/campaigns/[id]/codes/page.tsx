@@ -21,6 +21,7 @@ export default function AdminCampaignCodesPage() {
   const [stats, setStats] = useState<{ total: number; claimed: number; remaining: number } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
     async function fetchCampaignData() {
@@ -28,12 +29,20 @@ export default function AdminCampaignCodesPage() {
 
       try {
         const res = await fetch(`/api/campaigns/${id}/codes`);
-        if (!res.ok) throw new Error("Failed to fetch campaign details");
+        if (!res.ok) {
+          if (res.status === 403) {
+            setError("You do not have permission to access this campaign.");
+          } else {
+            setError("Failed to fetch campaign details.");
+          }
+          return;
+        }
 
         const data = await res.json();
         setCampaign(data.campaign);
         setCodes(data.codes);
         setStats(data.stats);
+        setIsOwner(true);
       } catch (err) {
         console.error("Error fetching campaign data:", err);
         setError("Failed to load campaign data.");
@@ -65,11 +74,9 @@ export default function AdminCampaignCodesPage() {
         </div>
       )}
 
-      {!loading && stats && (
-        <CodeList codes={codes} total={stats.total} claimed={stats.claimed} remaining={stats.remaining} />
-      )}
+      {!loading && stats && <CodeList codes={codes} total={stats.total} claimed={stats.claimed} remaining={stats.remaining} />}
 
-      {!loading && (
+      {!loading && isOwner && (
         <AddCodesForm
           campaignId={id}
           onCodesAdded={(newCodes) => setCodes([...codes, ...newCodes.map((code) => ({ code, assignedToEmail: null }))])}

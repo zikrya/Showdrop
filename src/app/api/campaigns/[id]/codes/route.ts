@@ -53,9 +53,15 @@ export async function POST(req: Request) {
   }
 }
 
-
 export async function GET(req: Request) {
   try {
+    const authResult = await auth();
+    if (!authResult.userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const userId = authResult.userId;
+
     const { pathname } = new URL(req.url);
     const id = pathname.split("/").at(-2);
 
@@ -63,9 +69,18 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Campaign ID is missing" }, { status: 400 });
     }
 
-    const [campaign] = await db.select().from(campaigns).where(eq(campaigns.id, id)).limit(1);
+    const [campaign] = await db
+      .select()
+      .from(campaigns)
+      .where(eq(campaigns.id, id))
+      .limit(1);
+
     if (!campaign) {
       return NextResponse.json({ error: "Campaign not found" }, { status: 404 });
+    }
+
+    if (campaign.createdBy !== userId) {
+      return NextResponse.json({ error: "You are not the owner of this campaign" }, { status: 403 });
     }
 
     const codes = await db.select().from(discountCodes).where(eq(discountCodes.campaignId, id));
