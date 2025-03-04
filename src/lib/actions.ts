@@ -3,6 +3,7 @@ import { db } from "./db";
 import { discountCodes, campaigns } from "./schema";
 import { eq, and, isNull, gt } from "drizzle-orm";
 import { createCampaignSchema } from "./validation";
+import { auth } from "@clerk/nextjs/server";
 
 const RATE_LIMIT_MINUTES = 1;
 
@@ -64,10 +65,18 @@ export async function claimDiscountAction(campaignId: string, email: string) {
 
 export async function createCampaignAction(name: string, description?: string) {
   try {
+    const authResult = await auth();
+    const userId = authResult?.userId;
+
+    if (!userId) {
+      return { error: "You must be signed in to create a campaign." };
+    }
+
     createCampaignSchema.parse({ name, description });
+
     const [newCampaign] = await db
       .insert(campaigns)
-      .values({ name, description })
+      .values({ name, description, createdBy: userId })
       .returning();
 
     return { success: true, campaign: newCampaign };

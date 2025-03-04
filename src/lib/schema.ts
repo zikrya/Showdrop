@@ -4,6 +4,7 @@ export const campaigns = pgTable("campaigns", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull(),
   description: text("description"),
+  createdBy: text("created_by").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
