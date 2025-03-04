@@ -2,9 +2,6 @@
 
 export default function CodeList({
   codes,
-  total,
-  claimed,
-  remaining,
 }: {
   codes: { code: string; assignedToEmail: string | null }[];
   total: number;

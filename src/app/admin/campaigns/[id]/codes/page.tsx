@@ -26,6 +26,7 @@ export default function AdminCampaignCodesPage() {
         setCodes(data.codes);
         setStats({ total: data.total, claimed: data.claimed, remaining: data.remaining });
       } catch (err) {
+        console.error("Error fetching campaign codes:", err);
         setError("Failed to load campaign data.");
       } finally {
         setLoading(false);

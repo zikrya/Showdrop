@@ -36,7 +36,8 @@ export default function CreateCampaignForm({ onClose }: { onClose: () => void })
         onClose();
         window.location.reload();
       }
-    } catch (_err: unknown) {
+    } catch (err) {
+      console.error("Create Campaign Error:", err);
       setError("An error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);

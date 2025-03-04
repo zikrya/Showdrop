@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { addDiscountCodesSchema } from "@/lib/validation";
 import { db } from "@/lib/db";
 import { discountCodes } from "@/lib/schema";
-import { eq, and, count, isNotNull } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 export async function POST(req: Request) {
   try {
