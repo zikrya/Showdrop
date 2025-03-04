@@ -39,7 +39,7 @@ export async function GET() {
   return new NextResponse(null, {
     status: 302,
     headers: {
-      Location: "/"
+      Location: "/admin"
     },
   });
 }
