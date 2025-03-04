@@ -15,3 +15,10 @@ export const discountCodes = pgTable("discount_codes", {
     assignedAt: timestamp("assigned_at"),
     lastClaimedAt: timestamp("last_claimed_at"),
   });
+
+  export const users = pgTable("users", {
+    id: text("id").primaryKey(),
+    clerkId: text("clerk_id").notNull().unique(),
+    email: text("email").notNull().unique(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  });
