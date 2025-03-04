@@ -14,8 +14,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { pathname } = new URL(req.url);
-    const campaignId = pathname.split("/").at(-2);
+    const url = new URL(req.url);
+    const pathnameSegments = url.pathname.split("/");
+    const campaignId = pathnameSegments.at(-1);
 
     if (!campaignId) {
       return NextResponse.json({ error: "Campaign ID is missing" }, { status: 400 });
@@ -53,9 +54,11 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request) { // ✅ Removed invalid second argument
   try {
-    const id = params.id;
+    const url = new URL(req.url);
+    const pathnameSegments = url.pathname.split("/");
+    const id = pathnameSegments.at(-1); // ✅ Extracts the campaign ID from the URL
 
     if (!id) {
       return NextResponse.json({ error: "Campaign ID is missing" }, { status: 400 });
