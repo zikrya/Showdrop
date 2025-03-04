@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import CreateCampaignForm from "../../components/CreateCampaignForm";
 
 type Campaign = {
   id: string;
@@ -14,6 +15,7 @@ export default function CampaignListPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     async function fetchCampaigns() {
@@ -36,6 +38,16 @@ export default function CampaignListPage() {
   return (
     <div className="max-w-3xl mx-auto p-6">
       <h1 className="text-2xl font-semibold mb-4">All Campaigns</h1>
+
+      {/* Create Campaign Button */}
+      <button
+        className="mb-4 p-2 bg-blue-600 text-white rounded"
+        onClick={() => setShowForm(true)}
+      >
+        + Create Campaign
+      </button>
+
+      {showForm && <CreateCampaignForm onClose={() => setShowForm(false)} />}
 
       {loading && <p>Loading campaigns...</p>}
       {error && <p className="text-red-500">{error}</p>}

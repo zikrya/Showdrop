@@ -1,7 +1,8 @@
 "use server";
 import { db } from "./db";
-import { discountCodes } from "./schema";
+import { discountCodes, campaigns } from "./schema";
 import { eq, and, isNull, gt } from "drizzle-orm";
+import { createCampaignSchema } from "./validation";
 
 const RATE_LIMIT_MINUTES = 1;
 
@@ -57,5 +58,21 @@ export async function claimDiscountAction(campaignId: string, email: string) {
   } catch (error) {
     console.error("Error claiming discount:", error);
     return { error: "An unexpected error occurred. Please try again later." };
+  }
+}
+
+
+export async function createCampaignAction(name: string, description?: string) {
+  try {
+    createCampaignSchema.parse({ name, description });
+    const [newCampaign] = await db
+      .insert(campaigns)
+      .values({ name, description })
+      .returning();
+
+    return { success: true, campaign: newCampaign };
+  } catch (error) {
+    console.error("Error creating campaign:", error);
+    return { error: "Failed to create campaign. Please try again." };
   }
 }
