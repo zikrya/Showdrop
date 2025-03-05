@@ -73,7 +73,7 @@ export default function CampaignForm({ campaignId }: { campaignId: string }) {
                   </div>
                 </FormControl>
                 <FormDescription className="text-xs text-gray-500">
-                  We'll send your discount code to this email address.
+                  We&apos;ll send your discount code to this email address.
                 </FormDescription>
                 <FormMessage />
               </FormItem>

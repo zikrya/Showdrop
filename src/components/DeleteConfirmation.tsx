@@ -1,11 +1,11 @@
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 interface DeleteConfirmationProps {
-  isOpen: boolean
-  onClose: () => void
-  onConfirm: () => void
-  campaignName: string
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  campaignName: string;
 }
 
 export function DeleteConfirmation({ isOpen, onClose, onConfirm, campaignName }: DeleteConfirmationProps) {
@@ -15,7 +15,8 @@ export function DeleteConfirmation({ isOpen, onClose, onConfirm, campaignName }:
         <DialogHeader>
           <DialogTitle>Delete Campaign</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete the campaign "{campaignName}"? This action cannot be undone.
+            Are you sure you want to delete the campaign <span dangerouslySetInnerHTML={{ __html: `&quot;${campaignName}&quot;` }} />?
+            This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -24,5 +25,5 @@ export function DeleteConfirmation({ isOpen, onClose, onConfirm, campaignName }:
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

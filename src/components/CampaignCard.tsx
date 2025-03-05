@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Calendar } from 'lucide-react';
+import { Calendar } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 type Campaign = {
@@ -21,13 +21,17 @@ export default function CampaignCard({ campaign, admin = false, index = 0 }: Pro
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(admin ? `/admin/campaigns/${campaign.id}/codes` : `/campaigns/${campaign.id}`);
+    if (admin) {
+      router.push(`/admin/campaigns/${campaign.id}/codes`);
+    } else {
+      router.push(`/campaigns/${campaign.id}`);
+    }
   };
 
   const formattedDate = new Date(campaign.createdAt).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
-    year: "numeric"
+    year: "numeric",
   });
 
   return (
@@ -37,7 +41,7 @@ export default function CampaignCard({ campaign, admin = false, index = 0 }: Pro
       transition={{ duration: 0.2, delay: index * 0.05 }}
       whileHover={{
         y: -2,
-        transition: { duration: 0.2 }
+        transition: { duration: 0.2 },
       }}
       onClick={handleClick}
       className="group cursor-pointer border border-gray-200 rounded-lg overflow-hidden hover:border-blue-100 hover:bg-blue-50/30 transition-all duration-200"
@@ -49,9 +53,7 @@ export default function CampaignCard({ campaign, admin = false, index = 0 }: Pro
             {campaign.name}
           </h2>
         </div>
-        <p className="mt-2 text-gray-600 text-sm pl-4">
-          {campaign.description || "No description provided."}
-        </p>
+        <p className="mt-2 text-gray-600 text-sm pl-4">{campaign.description || "No description provided."}</p>
         <div className="mt-4 flex items-center text-xs text-gray-400 pl-4">
           <Calendar className="mr-1 h-3 w-3" />
           <span>Created on {formattedDate}</span>

@@ -204,10 +204,11 @@ export default function AdminCampaignCodesPage() {
                   <Button
                     onClick={() => setIsDeleteDialogOpen(true)}
                     variant="ghost"
+                    disabled={deleting}
                     size="sm"
                     className="text-xs text-red-600 hover:text-red-700 hover:bg-transparent"
                   >
-                    Delete Campaign
+                    {deleting ? "Deleting..." : "Delete Campaign"}
                   </Button>
                 </div>
                 <div className="p-4">

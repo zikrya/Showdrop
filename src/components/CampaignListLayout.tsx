@@ -1,25 +1,24 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import CampaignCard from "./CampaignCard"
-import { CreateCampaignForm } from "./CreateCampaignForm"
-import { Plus } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react";
+import CampaignCard from "./CampaignCard";
+import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type Campaign = {
-  id: string
-  name: string
-  description?: string
-  createdAt: string
-}
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: string;
+};
 
 interface CampaignListLayoutProps {
-  title: string
-  subtitle?: string
-  fetchUrl: string
-  showCreateButton?: boolean
-  createButtonLabel?: string
-  onCreateCampaign?: () => void
+  title: string;
+  subtitle?: string;
+  fetchUrl: string;
+  showCreateButton?: boolean;
+  createButtonLabel?: string;
+  onCreateCampaign?: () => void;
 }
 
 export default function CampaignListLayout({
@@ -30,29 +29,30 @@ export default function CampaignListLayout({
   createButtonLabel = "Create Campaign",
   onCreateCampaign,
 }: CampaignListLayoutProps) {
-  const [campaigns, setCampaigns] = useState<Campaign[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [showCreateDialog, setShowCreateDialog] = useState(false)
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchCampaigns() {
       try {
-        const res = await fetch(fetchUrl)
-        if (!res.ok) throw new Error("Failed to fetch campaigns")
+        const res = await fetch(fetchUrl);
+        if (!res.ok) throw new Error("Failed to fetch campaigns");
 
-        const data: Campaign[] = await res.json()
-        setCampaigns(data)
+        const data: Campaign[] = await res.json();
+        setCampaigns(data);
       } catch (err) {
-        console.error("Error fetching campaigns:", err)
-        setError("Failed to load campaigns. Please try again.")
+        console.error("Error fetching campaigns:", err);
+        setError("Failed to load campaigns. Please try again.");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
 
-    fetchCampaigns()
-  }, [fetchUrl])
+    fetchCampaigns();
+  }, [fetchUrl]);
+
+  const isAdmin = fetchUrl === "/api/user-campaign";
 
   return (
     <div className="w-full bg-white min-h-[calc(100vh-64px)]">
@@ -104,13 +104,11 @@ export default function CampaignListLayout({
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
             {campaigns.map((campaign, index) => (
-              <CampaignCard key={campaign.id} campaign={campaign} index={index} />
+              <CampaignCard key={campaign.id} campaign={campaign} index={index} admin={isAdmin} />
             ))}
           </div>
         )}
       </div>
-
-      <CreateCampaignForm open={showCreateDialog} onOpenChange={setShowCreateDialog} />
     </div>
-  )
+  );
 }

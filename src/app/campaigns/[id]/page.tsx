@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { MapPin, Building2, Calendar, ArrowLeft, Share2, Edit, Tag } from 'lucide-react';
+import { MapPin, Building2, Calendar, ArrowLeft, Tag } from 'lucide-react';
 import CampaignForm from "@/components/CampaignForm";
 import { fetchCampaign } from "../../../lib/api";
 import { Button } from "@/components/ui/button";
