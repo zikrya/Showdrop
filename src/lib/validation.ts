@@ -1,8 +1,11 @@
 import { z } from "zod";
 
+
 export const createCampaignSchema = z.object({
   name: z.string().min(3, "Campaign name must be at least 3 characters"),
   description: z.string().optional(),
+  brandName: z.string().min(2, "Brand name must be at least 2 characters"),
+  location: z.string().min(2, "Location must be at least 2 characters"),
 });
 
 export const addDiscountCodesSchema = z.object({

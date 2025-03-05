@@ -27,7 +27,12 @@ export default function CreateCampaignForm({ onClose }: { onClose: () => void })
     setError(null);
 
     try {
-      const response = await createCampaignAction(data.name, data.description);
+      const response = await createCampaignAction(
+        data.name,
+        data.description,
+        data.brandName,
+        data.location
+      );
 
       if (response?.error) {
         setError(response.error);
@@ -58,6 +63,28 @@ export default function CreateCampaignForm({ onClose }: { onClose: () => void })
               placeholder="Enter campaign name"
             />
             {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium">Brand Name</label>
+            <input
+              type="text"
+              {...register("brandName")}
+              className="w-full p-2 border rounded"
+              placeholder="Enter brand name"
+            />
+            {errors.brandName && <p className="text-red-500 text-sm">{errors.brandName.message}</p>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium">Location</label>
+            <input
+              type="text"
+              {...register("location")}
+              className="w-full p-2 border rounded"
+              placeholder="Enter location"
+            />
+            {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
           </div>
 
           <div>

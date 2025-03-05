@@ -15,7 +15,14 @@ export async function POST(req: Request) {
     const body = await req.json();
     const parsedBody = createCampaignSchema.parse(body);
 
-    const campaign = await createCampaign(parsedBody.name, parsedBody.description, userId);
+    const campaign = await createCampaign(
+      parsedBody.name,
+      parsedBody.description,
+      parsedBody.brandName,
+      parsedBody.location,
+      userId
+    );
+
     return NextResponse.json(campaign, { status: 201 });
   } catch (err: unknown) {
     if (err instanceof Error) {

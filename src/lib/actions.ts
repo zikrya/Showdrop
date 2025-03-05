@@ -62,8 +62,12 @@ export async function claimDiscountAction(campaignId: string, email: string) {
   }
 }
 
-
-export async function createCampaignAction(name: string, description?: string) {
+export async function createCampaignAction(
+  name: string,
+  description?: string,
+  brandName?: string,
+  location?: string
+) {
   try {
     const authResult = await auth();
     const userId = authResult?.userId;
@@ -72,11 +76,17 @@ export async function createCampaignAction(name: string, description?: string) {
       return { error: "You must be signed in to create a campaign." };
     }
 
-    createCampaignSchema.parse({ name, description });
+    createCampaignSchema.parse({ name, description, brandName, location });
 
     const [newCampaign] = await db
       .insert(campaigns)
-      .values({ name, description, createdBy: userId })
+      .values({
+        name,
+        description,
+        brandName: brandName ?? "",
+        location: location ?? "",
+        createdBy: userId,
+      })
       .returning();
 
     return { success: true, campaign: newCampaign };

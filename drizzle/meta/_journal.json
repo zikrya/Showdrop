@@ -22,6 +22,13 @@
       "when": 1741118137313,
       "tag": "0002_yummy_fantastic_four",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1741145938000,
+      "tag": "0003_spooky_shinobi_shaw",
+      "breakpoints": true
     }
   ]
 }

@@ -54,11 +54,11 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET(req: Request) { // ✅ Removed invalid second argument
+export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
     const pathnameSegments = url.pathname.split("/");
-    const id = pathnameSegments.at(-1); // ✅ Extracts the campaign ID from the URL
+    const id = pathnameSegments.at(-1);
 
     if (!id) {
       return NextResponse.json({ error: "Campaign ID is missing" }, { status: 400 });

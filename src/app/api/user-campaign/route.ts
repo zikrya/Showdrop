@@ -13,7 +13,6 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Fetch campaigns created by the logged-in user
     const userCampaigns = await db
       .select()
       .from(campaigns)
