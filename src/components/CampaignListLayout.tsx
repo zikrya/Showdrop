@@ -101,9 +101,10 @@ export default function CampaignListLayout({
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
-            {campaigns.map((campaign, index) => (
-              <CampaignCard key={campaign.id} campaign={campaign} index={index} />
-            ))}
+{campaigns.map((campaign, index) => (
+  <CampaignCard key={campaign.id} campaign={campaign} index={index} admin={fetchUrl === "/api/user-campaign"} />
+))}
+
           </div>
         )}
       </div>
