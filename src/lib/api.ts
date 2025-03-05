@@ -38,7 +38,7 @@ export async function fetchCampaign(id: string) {
     }
   }
 
-  export async function addDiscountCodes(campaignId: string, codes: string[]) {
+  export async function addDiscountCodes(campaignId: string, payload: { codes?: string[]; generate?: number }) {
     try {
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
       const url = `${baseUrl}/api/campaigns/${campaignId}/codes`;
@@ -46,7 +46,7 @@ export async function fetchCampaign(id: string) {
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ codes }),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
@@ -58,5 +58,27 @@ export async function fetchCampaign(id: string) {
     } catch (error) {
       console.error("Error adding discount codes:", error);
       return { error: "Failed to add discount codes." };
+    }
+  }
+
+
+  export async function deleteCampaign(campaignId: string) {
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+      const url = `${baseUrl}/api/campaigns/${campaignId}`;
+
+      const res = await fetch(url, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Failed to delete campaign: ${res.status} - ${errorText}`);
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error deleting campaign:", error);
+      return { error: "Failed to delete campaign." };
     }
   }

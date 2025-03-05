@@ -1,124 +1,113 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useParams, useRouter } from "next/navigation"
-import { ArrowLeft, Building2, MapPin, Calendar, AlertTriangle } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { DeleteConfirmation } from "@/components/DeleteConfirmation"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { ArrowLeft, Building2, MapPin, Calendar, AlertTriangle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { DeleteConfirmation } from "@/components/DeleteConfirmation";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  fetchCampaign,
+  fetchDiscountCodes,
+  addDiscountCodes,
+  deleteCampaign,
+} from "@/lib/api";
 
 type Campaign = {
-  id: string
-  name: string
-  description: string
-  createdAt: string
-}
+  id: string;
+  name: string;
+  description: string;
+  createdAt: string;
+};
 
 export default function AdminCampaignCodesPage() {
-  const params = useParams()
-  const router = useRouter()
-  const id = typeof params.id === "string" ? params.id : params.id?.[0] || ""
+  const params = useParams();
+  const router = useRouter();
+  const id = typeof params.id === "string" ? params.id : params.id?.[0] || "";
 
-  const [campaign, setCampaign] = useState<Campaign | null>(null)
-  const [codes, setCodes] = useState<{ code: string; assignedToEmail: string | null }[]>([])
-  const [stats, setStats] = useState<{ total: number; claimed: number; remaining: number } | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [isOwner, setIsOwner] = useState(false)
-  const [deleting, setDeleting] = useState(false)
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [manualCodes, setManualCodes] = useState("") // Stores manually entered codes
-  const [generateCount, setGenerateCount] = useState(0) // Stores number of codes to generate
-  const [addingCodes, setAddingCodes] = useState(false)
+  const [campaign, setCampaign] = useState<Campaign | null>(null);
+  const [codes, setCodes] = useState<{ code: string; assignedToEmail: string | null }[]>([]);
+  const [stats, setStats] = useState<{ total: number; claimed: number; remaining: number } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isOwner, setIsOwner] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [manualCodes, setManualCodes] = useState("");
+  const [generateCount, setGenerateCount] = useState(0);
+  const [addingCodes, setAddingCodes] = useState(false);
 
   useEffect(() => {
-    async function fetchCampaignData() {
-      if (!id) return
+    async function loadCampaignData() {
+      if (!id) return;
 
       try {
-        const res = await fetch(`/api/campaigns/${id}/codes`)
-        if (!res.ok) {
-          if (res.status === 403) {
-            setError("You do not have permission to access this campaign.")
-          } else {
-            setError("Failed to fetch campaign details.")
-          }
-          return
+        const campaignData = await fetchCampaign(id);
+        const discountCodesData = await fetchDiscountCodes(id);
+
+        if (!campaignData) {
+          setError("Failed to fetch campaign details.");
+          return;
         }
 
-        const data = await res.json()
-        setCampaign(data.campaign)
-        setCodes(data.codes)
-        setStats(data.stats)
-        setIsOwner(true)
+        setCampaign(campaignData);
+        setCodes(discountCodesData.codes);
+        setStats(discountCodesData.stats);
+        setIsOwner(true);
       } catch (err) {
-        console.error("Error fetching campaign data:", err)
-        setError("Failed to load campaign data.")
+        console.error("Error fetching campaign data:", err);
+        setError("Failed to load campaign data.");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
 
-    fetchCampaignData()
-  }, [id])
+    loadCampaignData();
+  }, [id]);
 
   async function handleDeleteCampaign() {
-    setDeleting(true)
+    setDeleting(true);
     try {
-      const res = await fetch(`/api/campaigns/${id}`, { method: "DELETE" })
-
-      if (!res.ok) {
-        throw new Error("Failed to delete campaign")
-      }
-
-      router.push("/admin")
+      await deleteCampaign(id);
+      router.push("/admin");
     } catch (err) {
-      console.error("Error deleting campaign:", err)
-      alert("Failed to delete campaign. Please try again.")
+      console.error("Error deleting campaign:", err);
+      alert("Failed to delete campaign. Please try again.");
     } finally {
-      setDeleting(false)
-      setIsDeleteDialogOpen(false)
+      setDeleting(false);
+      setIsDeleteDialogOpen(false);
     }
   }
 
   async function handleAddCodes() {
-    setAddingCodes(true)
+    setAddingCodes(true);
     try {
       const codesArray = manualCodes
         .split("\n")
         .map((code) => code.trim())
-        .filter((code) => code.length > 0)
+        .filter((code) => code.length > 0);
 
-      const payload: { codes?: string[]; generate?: number } = {}
-      if (codesArray.length > 0) {
-        payload.codes = codesArray
-      }
-      if (generateCount > 0) {
-        payload.generate = generateCount
-      }
+      const payload: { codes?: string[]; generate?: number } = {};
+      if (codesArray.length > 0) payload.codes = codesArray;
+      if (generateCount > 0) payload.generate = generateCount;
 
-      const res = await fetch(`/api/campaigns/${id}/codes`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      })
+      const newCodes = await addDiscountCodes(id, payload);
 
-      if (!res.ok) {
-        throw new Error("Failed to add discount codes.")
+      if (newCodes.error) {
+        throw new Error(newCodes.error);
       }
 
-      const newCodes = await res.json()
-      setCodes([...codes, ...newCodes])
-      setManualCodes("")
-      setGenerateCount(0)
+      setCodes([...codes, ...newCodes]);
+      setManualCodes("");
+      setGenerateCount(0);
     } catch (err) {
-      console.error("Error adding codes:", err)
-      alert("Failed to add discount codes. Please try again.")
+      console.error("Error adding codes:", err);
+      alert("Failed to add discount codes. Please try again.");
     } finally {
-      setAddingCodes(false)
+      setAddingCodes(false);
     }
   }
 
