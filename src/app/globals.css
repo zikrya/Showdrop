@@ -189,3 +189,9 @@
   animation: blob 7s infinite;
 }
 
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
