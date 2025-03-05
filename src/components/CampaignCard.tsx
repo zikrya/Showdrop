@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { Calendar } from 'lucide-react';
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 type Campaign = {

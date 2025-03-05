@@ -4,8 +4,8 @@ import { notFound } from "next/navigation";
 
 type ParamsType = { id: string };
 
-export default async function CampaignPage({ params }: { params: ParamsType }) {
-  const { id } = params;
+export default async function CampaignPage({ params }: { params: Promise<ParamsType> }) {
+  const { id } = await params;
 
   if (!id) return notFound();
 

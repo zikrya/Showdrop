@@ -6,6 +6,8 @@ async function testDB() {
     const newCampaign = await db.insert(campaigns).values({
       name: "Test Campaign",
       description: "This is a test",
+      brandName: "Test Brand",
+      location: "Test Location",
       createdBy: "test-user-id",
     }).returning();
 
@@ -16,4 +18,5 @@ async function testDB() {
 }
 
 testDB();
+
 

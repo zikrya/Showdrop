@@ -19,6 +19,7 @@ interface CampaignListLayoutProps {
   fetchUrl: string
   showCreateButton?: boolean
   createButtonLabel?: string
+  onCreateCampaign?: () => void
 }
 
 export default function CampaignListLayout({
@@ -27,6 +28,7 @@ export default function CampaignListLayout({
   fetchUrl,
   showCreateButton = false,
   createButtonLabel = "Create Campaign",
+  onCreateCampaign,
 }: CampaignListLayoutProps) {
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [loading, setLoading] = useState(true)
@@ -61,9 +63,9 @@ export default function CampaignListLayout({
             {subtitle && <p className="mt-1 text-sm md:text-base text-gray-500">{subtitle}</p>}
           </div>
 
-          {showCreateButton && (
+          {showCreateButton && onCreateCampaign && (
             <Button
-              onClick={() => setShowCreateDialog(true)}
+              onClick={onCreateCampaign}
               className="inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-sm transition-all duration-200 hover:shadow"
             >
               <Plus className="mr-2 h-4 w-4" />
@@ -89,9 +91,9 @@ export default function CampaignListLayout({
           <div className="rounded-lg border border-dashed p-8 md:p-10 text-center">
             <h3 className="text-lg font-medium">No campaigns yet</h3>
             <p className="mt-1 text-sm text-gray-500">Create your first campaign to get started.</p>
-            {showCreateButton && (
+            {showCreateButton && onCreateCampaign && (
               <Button
-                onClick={() => setShowCreateDialog(true)}
+                onClick={onCreateCampaign}
                 className="mt-4 inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
               >
                 <Plus className="mr-2 h-4 w-4" />
@@ -101,10 +103,9 @@ export default function CampaignListLayout({
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
-{campaigns.map((campaign, index) => (
-  <CampaignCard key={campaign.id} campaign={campaign} index={index} admin={fetchUrl === "/api/user-campaign"} />
-))}
-
+            {campaigns.map((campaign, index) => (
+              <CampaignCard key={campaign.id} campaign={campaign} index={index} />
+            ))}
           </div>
         )}
       </div>

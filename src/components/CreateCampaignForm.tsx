@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { z } from "zod"
-import { Loader2, X } from "lucide-react"
+import { Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -139,7 +139,7 @@ export function CreateCampaignForm({ open, onOpenChange }: CreateCampaignFormPro
                       className="min-h-[80px] resize-none"
                     />
                   </FormControl>
-                  <FormDescription>Provide details about your campaign's goals and target audience.</FormDescription>
+                  <FormDescription>Provide details about your campaign&apos;s goals and target audience.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
