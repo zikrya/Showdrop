@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import CreateCampaignForm from "../../components/CreateCampaignForm";
+import CampaignCard from "../../components/CampaignCard";
 
 type Campaign = {
   id: string;
@@ -21,10 +21,7 @@ export default function CampaignListPage() {
     async function fetchCampaigns() {
       try {
         const res = await fetch("/api/campaigns");
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(`Failed to fetch campaigns: ${errorText}`);
-        }
+        if (!res.ok) throw new Error("Failed to fetch campaigns");
 
         const data: Campaign[] = await res.json();
         setCampaigns(data);
@@ -54,21 +51,11 @@ export default function CampaignListPage() {
 
       {loading && <p>Loading campaigns...</p>}
       {error && <p className="text-red-500">{error}</p>}
-
       {!loading && campaigns.length === 0 && <p>No campaigns found.</p>}
 
       <ul className="space-y-4">
         {campaigns.map((campaign) => (
-          <li key={campaign.id} className="p-4 border rounded shadow-md">
-            <h2 className="text-lg font-medium">{campaign.name}</h2>
-            <p className="text-gray-600">{campaign.description || "No description provided."}</p>
-            <p className="text-sm text-gray-400">
-              Created on {new Date(campaign.createdAt).toLocaleDateString()}
-            </p>
-            <Link href={`/campaigns/${campaign.id}`} className="text-blue-600 underline">
-              View Campaign
-            </Link>
-          </li>
+          <CampaignCard key={campaign.id} campaign={campaign} />
         ))}
       </ul>
     </div>

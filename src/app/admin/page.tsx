@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import CampaignCard from "../../components/CampaignCard";
 
 type Campaign = {
   id: string;
@@ -24,7 +24,7 @@ export default function AdminCampaignsPage() {
         const data: Campaign[] = await res.json();
         setCampaigns(data);
       } catch (err) {
-        console.error("Error fetching campaigns:", err); // ✅ Logs error properly
+        console.error("Error fetching campaigns:", err);
         setError("Failed to load campaigns. Please try again.");
       } finally {
         setLoading(false);
@@ -44,19 +44,7 @@ export default function AdminCampaignsPage() {
 
       <ul className="space-y-4 mt-4">
         {campaigns.map((campaign) => (
-          <li key={campaign.id} className="p-4 border rounded shadow-md">
-            <h2 className="text-lg font-medium">{campaign.name}</h2>
-            <p className="text-gray-600">{campaign.description || "No description provided."}</p>
-            <p className="text-sm text-gray-400">
-              Created on {new Date(campaign.createdAt).toLocaleDateString()}
-            </p>
-            <Link
-              href={`/admin/campaigns/${campaign.id}/codes`}
-              className="text-blue-600 underline"
-            >
-              Manage Campaign
-            </Link>
-          </li>
+          <CampaignCard key={campaign.id} campaign={campaign} admin />
         ))}
       </ul>
     </div>
