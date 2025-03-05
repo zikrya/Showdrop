@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import AddCodesForm from "@/components/AddCodesForm";
 import CodeList from "@/components/CodeList";
+import { Button } from "@/components/ui/button";
 
 type Campaign = {
   id: string;
@@ -14,6 +15,7 @@ type Campaign = {
 
 export default function AdminCampaignCodesPage() {
   const params = useParams();
+  const router = useRouter();
   const id = typeof params.id === "string" ? params.id : params.id?.[0] || "";
 
   const [campaign, setCampaign] = useState<Campaign | null>(null);
@@ -22,6 +24,7 @@ export default function AdminCampaignCodesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isOwner, setIsOwner] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     async function fetchCampaignData() {
@@ -54,6 +57,29 @@ export default function AdminCampaignCodesPage() {
     fetchCampaignData();
   }, [id]);
 
+  async function handleDeleteCampaign() {
+    if (!confirm("Are you sure you want to delete this campaign? This action cannot be undone.")) {
+      return;
+    }
+
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/campaigns/${id}`, { method: "DELETE" });
+
+      if (!res.ok) {
+        throw new Error("Failed to delete campaign");
+      }
+
+      alert("Campaign deleted successfully!");
+      router.push("/admin");
+    } catch (err) {
+      console.error("Error deleting campaign:", err);
+      alert("Failed to delete campaign. Please try again.");
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   return (
     <div className="max-w-2xl mx-auto p-6">
       {loading && (
@@ -71,6 +97,16 @@ export default function AdminCampaignCodesPage() {
           <h1 className="text-2xl font-semibold">{campaign.name}</h1>
           <p className="text-gray-600">{campaign.description || "No description provided."}</p>
           <p className="text-sm text-gray-400">Created on {new Date(campaign.createdAt).toLocaleDateString()}</p>
+
+          {isOwner && (
+            <Button
+              onClick={handleDeleteCampaign}
+              className="mt-4 bg-red-600 text-white hover:bg-red-700"
+              disabled={deleting}
+            >
+              {deleting ? "Deleting..." : "Delete Campaign"}
+            </Button>
+          )}
         </div>
       )}
 

@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { campaigns, discountCodes } from "@/lib/schema";
 import { addDiscountCodesSchema } from "@/lib/validation";
 import { eq } from "drizzle-orm";
+import { deleteCampaign } from "@/lib/services/campaignService";
 
 export async function POST(req: Request) {
   try {
@@ -78,5 +79,33 @@ export async function GET(req: Request) {
   } catch (error) {
     console.error("Error fetching campaign:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
+
+
+export async function DELETE(req: Request) {
+  try {
+    const authResult = await auth();
+    const userId = authResult?.userId;
+
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const url = new URL(req.url);
+    const pathnameSegments = url.pathname.split("/");
+    const campaignId = pathnameSegments.at(-1);
+
+    if (!campaignId) {
+      return NextResponse.json({ error: "Campaign ID is missing" }, { status: 400 });
+    }
+
+    await deleteCampaign(campaignId, userId);
+
+    return NextResponse.json({ success: true, message: "Campaign deleted successfully" }, { status: 200 });
+
+  } catch (error) {
+    console.error("Error deleting campaign:", error);
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Internal Server Error" }, { status: 500 });
   }
 }
