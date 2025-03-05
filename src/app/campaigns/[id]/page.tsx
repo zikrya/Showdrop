@@ -19,7 +19,6 @@ export default async function CampaignPage({ params }: { params: Promise<ParamsT
 
   if (!campaign) return notFound()
 
-  // Format date for display
   const formattedDate = new Date(campaign.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -38,22 +37,6 @@ export default async function CampaignPage({ params }: { params: Promise<ParamsT
           </Link>
 
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-9 text-gray-600 border-gray-200 hover:bg-gray-50 hover:text-gray-700 hover:border-gray-300"
-            >
-              <Share2 className="mr-2 h-4 w-4" />
-              Share
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-9 text-gray-600 border-gray-200 hover:bg-gray-50 hover:text-gray-700 hover:border-gray-300"
-            >
-              <Edit className="mr-2 h-4 w-4" />
-              Edit
-            </Button>
           </div>
         </div>
 
