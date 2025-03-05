@@ -40,7 +40,9 @@ export default function CampaignListLayout({
         if (!res.ok) throw new Error("Failed to fetch campaigns");
 
         const result = await res.json();
-        setCampaigns(Array.isArray(result.data) ? result.data : []);
+
+        const campaignData = Array.isArray(result) ? result : result.data;
+        setCampaigns(Array.isArray(campaignData) ? campaignData : []);
       } catch (err) {
         console.error("Error fetching campaigns:", err);
         setError("Failed to load campaigns. Please try again.");
@@ -51,6 +53,7 @@ export default function CampaignListLayout({
 
     fetchCampaigns();
   }, [fetchUrl]);
+
 
   const isAdmin = fetchUrl === "/api/user-campaign";
 
