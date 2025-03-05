@@ -39,8 +39,8 @@ export default function CampaignListLayout({
         const res = await fetch(fetchUrl);
         if (!res.ok) throw new Error("Failed to fetch campaigns");
 
-        const data: Campaign[] = await res.json();
-        setCampaigns(data);
+        const result = await res.json();
+        setCampaigns(Array.isArray(result.data) ? result.data : []);
       } catch (err) {
         console.error("Error fetching campaigns:", err);
         setError("Failed to load campaigns. Please try again.");
