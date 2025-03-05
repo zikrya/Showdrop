@@ -6,6 +6,7 @@ import { ArrowLeft, Building2, MapPin, Calendar, AlertTriangle } from "lucide-re
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { DeleteConfirmation } from "@/components/DeleteConfirmation"
 
 type Campaign = {
   id: string
@@ -26,6 +27,7 @@ export default function AdminCampaignCodesPage() {
   const [error, setError] = useState<string | null>(null)
   const [isOwner, setIsOwner] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
   useEffect(() => {
     async function fetchCampaignData() {
@@ -59,10 +61,6 @@ export default function AdminCampaignCodesPage() {
   }, [id])
 
   async function handleDeleteCampaign() {
-    if (!confirm("Are you sure you want to delete this campaign? This action cannot be undone.")) {
-      return
-    }
-
     setDeleting(true)
     try {
       const res = await fetch(`/api/campaigns/${id}`, { method: "DELETE" })
@@ -71,13 +69,13 @@ export default function AdminCampaignCodesPage() {
         throw new Error("Failed to delete campaign")
       }
 
-      alert("Campaign deleted successfully!")
       router.push("/admin")
     } catch (err) {
       console.error("Error deleting campaign:", err)
       alert("Failed to delete campaign. Please try again.")
     } finally {
       setDeleting(false)
+      setIsDeleteDialogOpen(false)
     }
   }
 
@@ -204,11 +202,10 @@ export default function AdminCampaignCodesPage() {
                     <p className="text-xs text-muted-foreground mt-0.5">Generate new codes for this campaign</p>
                   </div>
                   <Button
-                    onClick={handleDeleteCampaign}
+                    onClick={() => setIsDeleteDialogOpen(true)}
                     variant="ghost"
                     size="sm"
                     className="text-xs text-red-600 hover:text-red-700 hover:bg-transparent"
-                    disabled={deleting}
                   >
                     Delete Campaign
                   </Button>
@@ -241,6 +238,13 @@ export default function AdminCampaignCodesPage() {
           </>
         )
       )}
+      <DeleteConfirmation
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={handleDeleteCampaign}
+        campaignName={campaign?.name || ""}
+      />
     </div>
   )
 }
+
