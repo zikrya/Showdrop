@@ -134,8 +134,7 @@ export default function AdminCampaignCodesPage() {
           <span className="text-sm font-medium">Back to Campaigns</span>
         </Button>
 
-        <div className="flex gap-2">
-        </div>
+        <div className="flex gap-2"></div>
       </div>
 
       {loading ? (
@@ -255,39 +254,46 @@ export default function AdminCampaignCodesPage() {
                   </Button>
                 </div>
                 <div className="p-4">
-                  <div className="space-y-2">
+                  <div className="space-y-4">
                     <div>
-                      <label htmlFor="codes" className="text-sm mb-1.5 block">
+                      <label htmlFor="codes" className="text-sm font-medium mb-1.5 block">
                         Add Discount Codes (one per line)
                       </label>
                       <Textarea
-                  value={manualCodes}
-                  onChange={(e) => setManualCodes(e.target.value)}
-                  placeholder="Enter discount codes..."
-                  className="w-full h-[80px] px-3 py-2 text-sm rounded-md border border-gray-200"
-                />
+                        id="codes"
+                        value={manualCodes}
+                        onChange={(e) => setManualCodes(e.target.value)}
+                        placeholder="Enter discount codes..."
+                        className="w-full h-[80px] text-sm rounded-md border border-gray-200 resize-none"
+                      />
                     </div>
-                    <div className="flex items-center gap-2 mt-4">
-                  <label className="text-sm">Generate Random Codes:</label>
-                  <Input
-                    type="number"
-                    min="0"
-                    value={generateCount}
-                    onChange={(e) => setGenerateCount(parseInt(e.target.value) || 0)}
-                    className="w-20 text-center"
-                  />
-                </div>
-
-                <Button
-                  onClick={handleAddCodes}
-                  disabled={addingCodes}
-                  className="mt-4 w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
-                >
-                  {addingCodes ? "Adding..." : "Add Codes"}
-                </Button>
-              </div>
+                    <div>
+                      <label htmlFor="generateCount" className="text-sm font-medium mb-1.5 block">
+                        Generate Random Codes
+                      </label>
+                      <div className="flex items-center gap-3">
+                        <Input
+                          id="generateCount"
+                          type="number"
+                          min="0"
+                          value={generateCount}
+                          onChange={(e) => setGenerateCount(Number.parseInt(e.target.value) || 0)}
+                          className="w-24 text-sm"
+                          placeholder="Count"
+                        />
+                        <span className="text-xs text-muted-foreground">Enter the number of codes to generate</span>
+                      </div>
+                    </div>
+                    <Button
+                      onClick={handleAddCodes}
+                      disabled={addingCodes}
+                      className="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      {addingCodes ? "Adding..." : "Add Codes"}
+                    </Button>
                   </div>
                 </div>
+              </div>
             )}
           </>
         )
