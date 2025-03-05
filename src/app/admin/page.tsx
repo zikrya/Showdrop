@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import CampaignListLayout from "@/components/CampaignListLayout"
-import CreateCampaignForm from "@/components/CreateCampaignForm"
+import { CreateCampaignForm } from "@/components/CreateCampaignForm"
 
 export default function AdminCampaignsPage() {
   const [showCreateForm, setShowCreateForm] = useState(false)
@@ -17,7 +17,7 @@ export default function AdminCampaignsPage() {
         onCreateCampaign={() => setShowCreateForm(true)}
       />
 
-      {showCreateForm && <CreateCampaignForm onClose={() => setShowCreateForm(false)} />}
+      {showCreateForm && <CreateCampaignForm open={showCreateForm} onOpenChange={setShowCreateForm} />}
     </>
   )
 }

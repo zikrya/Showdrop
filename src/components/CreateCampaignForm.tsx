@@ -1,123 +1,185 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { createCampaignSchema } from "@/lib/validation";
-import { createCampaignAction } from "@/lib/actions";
-import { z } from "zod";
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import type { z } from "zod"
+import { Loader2, X } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { createCampaignAction } from "@/lib/actions"
+import { createCampaignSchema } from "@/lib/validation"
 
 type CreateCampaignFormValues = z.infer<typeof createCampaignSchema>;
 
-export default function CreateCampaignForm({ onClose }: { onClose: () => void }) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+interface CreateCampaignFormProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<CreateCampaignFormValues>({
+export function CreateCampaignForm({ open, onOpenChange }: CreateCampaignFormProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
+
+  const form = useForm<CreateCampaignFormValues>({
     resolver: zodResolver(createCampaignSchema),
-  });
+    defaultValues: {
+      name: "",
+      brandName: "",
+      location: "",
+      description: "",
+    },
+  })
 
-  const onSubmit = async (data: CreateCampaignFormValues) => {
-    setIsSubmitting(true);
-    setError(null);
+  async function onSubmit(data: CreateCampaignFormValues) {
+    setIsSubmitting(true)
+    setError(null)
+    setSuccess(false)
 
     try {
-      const response = await createCampaignAction(
-        data.name,
-        data.description,
-        data.brandName,
-        data.location
-      );
+      const response = await createCampaignAction(data.name, data.description, data.brandName, data.location)
 
       if (response?.error) {
-        setError(response.error);
+        setError(response.error)
       } else {
-        reset();
-        onClose();
-        window.location.reload();
+        setSuccess(true)
+        form.reset()
+
+        // Close the dialog after a short delay to show success state
+        setTimeout(() => {
+          onOpenChange(false)
+          window.location.reload()
+        }, 1000)
       }
     } catch (err) {
-      console.error("Create Campaign Error:", err);
-      setError("An error occurred. Please try again.");
+      console.error("Create Campaign Error:", err)
+      setError("An unexpected error occurred. Please try again.")
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-        <h2 className="text-lg font-semibold mb-4">Create New Campaign</h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium">Campaign Name</label>
-            <input
-              type="text"
-              {...register("name")}
-              className="w-full p-2 border rounded"
-              placeholder="Enter campaign name"
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-xl">Create New Campaign</DialogTitle>
+          </div>
+          <DialogDescription>Fill out the form below to create a new marketing campaign.</DialogDescription>
+        </DialogHeader>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 py-2">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Campaign Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter campaign name" {...field} disabled={isSubmitting} className="h-10" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium">Brand Name</label>
-            <input
-              type="text"
-              {...register("brandName")}
-              className="w-full p-2 border rounded"
-              placeholder="Enter brand name"
+            <FormField
+              control={form.control}
+              name="brandName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Brand Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter brand name" {...field} disabled={isSubmitting} className="h-10" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.brandName && <p className="text-red-500 text-sm">{errors.brandName.message}</p>}
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium">Location</label>
-            <input
-              type="text"
-              {...register("location")}
-              className="w-full p-2 border rounded"
-              placeholder="Enter location"
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Location</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter location" {...field} disabled={isSubmitting} className="h-10" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium">Description (Optional)</label>
-            <textarea
-              {...register("description")}
-              className="w-full p-2 border rounded"
-              placeholder="Enter campaign description"
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Enter campaign description (optional)"
+                      {...field}
+                      disabled={isSubmitting}
+                      className="min-h-[80px] resize-none"
+                    />
+                  </FormControl>
+                  <FormDescription>Provide details about your campaign's goals and target audience.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
-          </div>
 
-          <div className="flex justify-end space-x-2">
-            <button
-              type="button"
-              className="px-4 py-2 bg-gray-300 rounded"
-              onClick={onClose}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Creating..." : "Create"}
-            </button>
-          </div>
+            {error && <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
 
-          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-        </form>
-      </div>
-    </div>
-  );
+            {success && (
+              <div className="rounded-md bg-green-50 p-3 text-sm text-green-600">Campaign created successfully!</div>
+            )}
+
+            <DialogFooter className="pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={isSubmitting}
+                className="h-10"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  "Create Campaign"
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  )
 }
+
