@@ -1,8 +1,42 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Showdrop - Campaign Discount Code System
 
-## Getting Started
+This project is a **mini consumer component** of the Showdrop platform. It allows **local businesses** to launch campaigns and distribute **unique discount codes** to customers who provide their email addresses.
 
-First, run the development server:
+---
+
+## 🚀 Features
+
+- **Campaign Management**: Create, view, and delete campaigns.
+- **Discount Code Handling**: Add manual or auto-generated unique discount codes.
+- **Customer Redemption**: Customers can claim one-time-use discount codes.
+- **Admin Dashboard**: View campaign statistics and manage discount codes.
+- **API-Driven Architecture**: Backend powered by Next.js API routes and PostgreSQL (via Drizzle ORM).
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Next.js 15 (App Router), React, Tailwind CSS, Shadcn
+- **Backend**: Next.js API Routes, Drizzle ORM, PostgreSQL (Neon)
+- **Authentication**: Clerk Auth
+- **Deployment**: Vercel
+
+---
+
+## 🏗️ Installation & Setup
+
+### **Clone the Repository**
+
+```sh
+git clone https://github.com/zikrya/Showdrop.git
+cd showdrop
+```
+
+### Install Dependencies
+
+```bash
+nvm use --lts
+```
 
 ```bash
 npm run dev
@@ -14,23 +48,132 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### **Setup Environment Variables**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Create a .env file in the root directory and add the following:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+DATABASE_URL=postgresql://showdrop_owner:npg_rO5ZLpmwczI8@ep-sweet-credit-a5hayri9-pooler.us-east-2.aws.neon.tech/showdrop?sslmode=require
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_Zml0dGluZy1waXJhbmhhLTEuY2xlcmsuYWNjb3VudHMuZGV2JA
+CLERK_SECRET_KEY=sk_test_EfQ4kDKGBlMhkuQNOq2l7HTWb2JUNp5z3A4z9swNQA
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/api/auth
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/api/auth
+```
 
-## Learn More
+### **Run the Development Server**
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run dev
+# or
+yarn dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### **API Endpoints**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+#### Create a Campaign
 
-## Deploy on Vercel
+Endpoint: POST /api/campaigns
+Request Body:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+{
+  "name": "Summer Sale",
+  "description": "Exclusive summer discounts",
+  "brandName": "Nike",
+  "location": "New York"
+}
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Response:
+
+```bash
+{
+  "id": "abc123",
+  "name": "Summer Sale",
+  "description": "Exclusive summer discounts",
+  "createdAt": "2025-03-05T12:00:00Z"
+}
+```
+
+#### Get all Campaigns
+
+Endpoint: GET /api/campaigns
+Response:
+
+```bash
+[
+  {
+    "id": "abc123",
+    "name": "Summer Sale",
+    "brandName": "Nike",
+    "location": "New York"
+  }
+]
+```
+
+#### Delete a Campaign
+
+Endpoint: DELETE /api/campaigns/[id]
+Response:
+
+```bash
+{ "success": true, "message": "Campaign deleted successfully" }
+
+```
+
+#### Add Discount Codes (Manual & Generated)
+
+Endpoint: POST /api/campaigns/[id]/codes
+Request Body:
+
+```bash
+{
+  "codes": ["DISCOUNT50", "SUMMER30"],
+  "generate": 5
+}
+```
+
+Response:
+
+```bash
+[
+  { "code": "DISCOUNT50" },
+  { "code": "SUMMER30" },
+  { "code": "ABC123" },
+  { "code": "XYZ789" }
+]
+```
+
+#### Get Campaign Discount Codes
+
+Endpoint: GET /api/campaigns/[id]/codes
+Response:
+
+```bash
+{
+  "total": 10,
+  "claimed": 4,
+  "remaining": 6,
+  "codes": [
+    { "code": "DISCOUNT50", "assignedToEmail": "john@example.com" }
+  ]
+}
+```
+
+#### Claim a Discount Code
+
+Endpoint: POST /api/campaigns/[id]/claim
+Request Body:
+
+```bash
+{ "email": "customer@example.com" }
+
+```
+
+Response:
+
+```bash
+{ "code": "SUMMER30" }
+```
