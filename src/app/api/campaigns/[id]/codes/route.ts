@@ -4,6 +4,23 @@ import { addDiscountCodesSchema } from "@/lib/validation";
 import { db } from "@/lib/db";
 import { discountCodes, campaigns } from "@/lib/schema";
 import { eq } from "drizzle-orm";
+import { nanoid } from "nanoid";
+
+// Helper function to generate unique discount codes
+function generateUniqueCodes(count: number, existingCodes: Set<string>): string[] {
+  const generatedCodes: string[] = [];
+
+  while (generatedCodes.length < count) {
+    const newCode = nanoid(10).toUpperCase(); // Generate a 10-character unique code
+
+    if (!existingCodes.has(newCode)) {
+      generatedCodes.push(newCode);
+      existingCodes.add(newCode);
+    }
+  }
+
+  return generatedCodes;
+}
 
 export async function POST(req: Request) {
   try {
@@ -13,9 +30,9 @@ export async function POST(req: Request) {
     }
 
     const userId = authResult.userId;
-
     const { pathname } = new URL(req.url);
     const campaignId = pathname.split("/").at(-2);
+
     if (!campaignId) {
       return NextResponse.json({ error: "Campaign ID is missing" }, { status: 400 });
     }
@@ -31,12 +48,34 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const parsedBody = addDiscountCodesSchema.parse(body);
 
+    if (!body.codes && !body.generate) {
+      return NextResponse.json({ error: "Must provide either codes or generate count" }, { status: 400 });
+    }
+
+    // Fetch existing discount codes to prevent duplicates
+    const existingCodes = new Set(
+      (await db.select().from(discountCodes).where(eq(discountCodes.campaignId, campaignId))).map((c) => c.code)
+    );
+
+    let newCodes: string[] = [];
+
+    if (body.generate && typeof body.generate === "number") {
+      newCodes = generateUniqueCodes(body.generate, existingCodes);
+    } else {
+      const parsedBody = addDiscountCodesSchema.parse(body);
+      newCodes = parsedBody.codes.filter((code) => !existingCodes.has(code)); // Avoid adding duplicates
+    }
+
+    if (newCodes.length === 0) {
+      return NextResponse.json({ error: "No new unique discount codes were added." }, { status: 400 });
+    }
+
+    // Insert new discount codes
     const insertedCodes = await db
       .insert(discountCodes)
       .values(
-        parsedBody.codes.map((code: string) => ({
+        newCodes.map((code) => ({
           campaignId,
           code,
         }))
@@ -44,7 +83,6 @@ export async function POST(req: Request) {
       .returning();
 
     return NextResponse.json(insertedCodes, { status: 201 });
-
   } catch (err: unknown) {
     if (err instanceof Error) {
       return NextResponse.json({ error: err.message }, { status: 400 });

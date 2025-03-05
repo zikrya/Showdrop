@@ -24,6 +24,7 @@
     "drizzle-orm": "^0.40.0",
     "framer-motion": "^12.4.10",
     "lucide-react": "^0.477.0",
+    "nanoid": "^5.1.2",
     "next": "15.2.0",
     "pg": "^8.13.3",
     "pg-hstore": "^2.3.4",

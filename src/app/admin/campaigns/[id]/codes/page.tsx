@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { DeleteConfirmation } from "@/components/DeleteConfirmation"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 
 type Campaign = {
   id: string
@@ -28,6 +30,9 @@ export default function AdminCampaignCodesPage() {
   const [isOwner, setIsOwner] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [manualCodes, setManualCodes] = useState("") // Stores manually entered codes
+  const [generateCount, setGenerateCount] = useState(0) // Stores number of codes to generate
+  const [addingCodes, setAddingCodes] = useState(false)
 
   useEffect(() => {
     async function fetchCampaignData() {
@@ -76,6 +81,44 @@ export default function AdminCampaignCodesPage() {
     } finally {
       setDeleting(false)
       setIsDeleteDialogOpen(false)
+    }
+  }
+
+  async function handleAddCodes() {
+    setAddingCodes(true)
+    try {
+      const codesArray = manualCodes
+        .split("\n")
+        .map((code) => code.trim())
+        .filter((code) => code.length > 0)
+
+      const payload: { codes?: string[]; generate?: number } = {}
+      if (codesArray.length > 0) {
+        payload.codes = codesArray
+      }
+      if (generateCount > 0) {
+        payload.generate = generateCount
+      }
+
+      const res = await fetch(`/api/campaigns/${id}/codes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+
+      if (!res.ok) {
+        throw new Error("Failed to add discount codes.")
+      }
+
+      const newCodes = await res.json()
+      setCodes([...codes, ...newCodes])
+      setManualCodes("")
+      setGenerateCount(0)
+    } catch (err) {
+      console.error("Error adding codes:", err)
+      alert("Failed to add discount codes. Please try again.")
+    } finally {
+      setAddingCodes(false)
     }
   }
 
@@ -217,24 +260,34 @@ export default function AdminCampaignCodesPage() {
                       <label htmlFor="codes" className="text-sm mb-1.5 block">
                         Add Discount Codes (one per line)
                       </label>
-                      <textarea
-                        id="codes"
-                        className="w-full h-[80px] px-3 py-2 text-sm rounded-md border border-gray-200
-                     placeholder:text-muted-foreground focus:outline-none focus:ring-1
-                     focus:ring-blue-500/20 focus:border-blue-500"
-                        placeholder="Enter discount codes, one per line..."
-                      />
+                      <Textarea
+                  value={manualCodes}
+                  onChange={(e) => setManualCodes(e.target.value)}
+                  placeholder="Enter discount codes..."
+                  className="w-full h-[80px] px-3 py-2 text-sm rounded-md border border-gray-200"
+                />
                     </div>
-                    <Button
-                      className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600
-                     hover:to-blue-700 text-white shadow-sm"
-                      size="sm"
-                    >
-                      Add Codes
-                    </Button>
+                    <div className="flex items-center gap-2 mt-4">
+                  <label className="text-sm">Generate Random Codes:</label>
+                  <Input
+                    type="number"
+                    min="0"
+                    value={generateCount}
+                    onChange={(e) => setGenerateCount(parseInt(e.target.value) || 0)}
+                    className="w-20 text-center"
+                  />
+                </div>
+
+                <Button
+                  onClick={handleAddCodes}
+                  disabled={addingCodes}
+                  className="mt-4 w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+                >
+                  {addingCodes ? "Adding..." : "Add Codes"}
+                </Button>
+              </div>
                   </div>
                 </div>
-              </div>
             )}
           </>
         )
