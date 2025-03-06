@@ -9,12 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DeleteConfirmation } from "@/components/DeleteConfirmation";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  fetchCampaign,
-  fetchDiscountCodes,
-  addDiscountCodes,
-  deleteCampaign,
-} from "@/lib/api";
+import { fetchCampaign, fetchDiscountCodes, addDiscountCodes, deleteCampaign } from "@/lib/api";
 
 type Campaign = {
   id: string;
@@ -257,31 +252,31 @@ export default function AdminCampaignCodesPage() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="generateCount" className="text-sm font-medium mb-1.5 block">
-                        Generate Random Codes
-                      </label>
-                      <div className="flex items-center gap-3">
-                        <Input
-                          id="generateCount"
-                          type="number"
-                          min="0"
-                          value={generateCount}
-                          onChange={(e) => setGenerateCount(Number.parseInt(e.target.value) || 0)}
-                          className="w-24 text-sm"
-                          placeholder="Count"
-                        />
-                        <span className="text-xs text-muted-foreground">Enter the number of codes to generate</span>
-                      </div>
+                    <label htmlFor="generateCount" className="text-sm font-medium block">
+                      Generate Random Codes
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <Input
+                        id="generateCount"
+                        type="number"
+                        min="1"
+                        value={generateCount}
+                        onChange={(e) => setGenerateCount(Math.max(0, Number(e.target.value) || 0))}
+                        className="w-24 text-sm"
+                        placeholder="Count"
+                      />
+                      <span className="text-xs text-muted-foreground">Enter at least 1 code to generate</span>
                     </div>
-                    <Button
-                      onClick={handleAddCodes}
-                      disabled={addingCodes}
-                      className="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      {addingCodes ? "Adding..." : "Add Codes"}
-                    </Button>
                   </div>
+                  <Button
+                    onClick={handleAddCodes}
+                    disabled={addingCodes || (!manualCodes.trim() && generateCount < 1)}
+                    className="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    {addingCodes ? "Adding..." : "Add Codes"}
+                  </Button>
                 </div>
+              </div>
               </div>
             )}
           </>
