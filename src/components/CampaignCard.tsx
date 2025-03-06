@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Calendar } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { formatDate } from "../lib/utils"
 
 type Campaign = {
   id: string;
@@ -28,11 +29,7 @@ export default function CampaignCard({ campaign, admin = false, index = 0 }: Pro
     }
   };
 
-  const formattedDate = new Date(campaign.createdAt).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  const formattedDate = formatDate(campaign.createdAt, { month: "short", day: "numeric", year: "numeric" });
 
   return (
     <motion.div

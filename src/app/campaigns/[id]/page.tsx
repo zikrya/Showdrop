@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
+import {formatDate} from "../../../lib/utils"
 
 type ParamsType = { id: string }
 
@@ -19,11 +20,7 @@ export default async function CampaignPage({ params }: { params: Promise<ParamsT
 
   if (!campaign) return notFound()
 
-  const formattedDate = new Date(campaign.createdAt).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })
+  const formattedDate = formatDate(campaign.createdAt);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50/50">
