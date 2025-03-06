@@ -1,4 +1,4 @@
-export {}; // <-- Add this line
+export {};
 
 test("Jest is working correctly", () => {
   expect(true).toBe(true);
