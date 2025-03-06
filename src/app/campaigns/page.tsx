@@ -1,4 +1,4 @@
-import CampaignListLayout from "@/components/CampaignListLayout"
+import CampaignListLayout from "@/components/campaign-view/CampaignListLayout"
 
 export default function CampaignListPage() {
   return (

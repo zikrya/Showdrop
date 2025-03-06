@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Calendar } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { formatDate } from "../lib/utils"
+import { formatDate } from "../../lib/utils"
 
 type Campaign = {
   id: string;

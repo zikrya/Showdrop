@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import CampaignListLayout from "@/components/CampaignListLayout"
-import { CreateCampaignForm } from "@/components/CreateCampaignForm"
+import CampaignListLayout from "@/components/campaign-view/CampaignListLayout"
+import { CreateCampaignForm } from "@/components/campaign-view/CreateCampaignForm"
 
 export default function AdminCampaignsPage() {
   const [showCreateForm, setShowCreateForm] = useState(false)

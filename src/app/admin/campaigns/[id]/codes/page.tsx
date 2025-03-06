@@ -6,7 +6,7 @@ import { ArrowLeft, Building2, MapPin, Calendar, AlertTriangle } from "lucide-re
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { DeleteConfirmation } from "@/components/DeleteConfirmation";
+import { DeleteConfirmation } from "@/components/admin-view/DeleteConfirmation";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { fetchCampaign, fetchDiscountCodes, addDiscountCodes, deleteCampaign } from "@/lib/api";

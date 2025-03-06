@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { MapPin, Building2, Calendar, ArrowLeft, Tag } from 'lucide-react';
-import CampaignForm from "@/components/CampaignForm";
+import CampaignForm from "@/components/admin-view/CampaignForm";
 import { fetchCampaign } from "../../../lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
