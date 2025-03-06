@@ -4,7 +4,7 @@ This project is a **mini consumer component** of the Showdrop platform. It allow
 
 ---
 
-## 🚀 Features
+## Features
 
 - **Campaign Management**: Create, view, and delete campaigns.
 - **Discount Code Handling**: Add manual or auto-generated unique discount codes.
@@ -14,16 +14,24 @@ This project is a **mini consumer component** of the Showdrop platform. It allow
 
 ---
 
-## 🛠️ Tech Stack
+## How It Works
+
+1. Users who create accounts can create campaigns, delete campaigns, or generate discount codes through a dashboard. They have the option of randomly generating, or creating their own.
+2. Signed or not, users can use their emails to get discount code for whatever campaign.
+3. Codes are assigned to user's emails.
+4. Admins can monitor their campaign stats like total discount codes. claimed codes, or remaining codes
+
+## Tech Stack
 
 - **Frontend**: Next.js 15 (App Router), React, Tailwind CSS, Shadcn
 - **Backend**: Next.js API Routes, Drizzle ORM, PostgreSQL (Neon)
 - **Authentication**: Clerk Auth
 - **Deployment**: Vercel
+- **Testing**: Jest
 
 ---
 
-## 🏗️ Installation & Setup
+## Installation & Setup
 
 ### **Clone the Repository**
 
@@ -39,13 +47,9 @@ nvm use --lts
 ```
 
 ```bash
-npm run dev
+npm install
 # or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+yarn install
 ```
 
 ### **Setup Environment Variables**
@@ -68,6 +72,14 @@ NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/api/auth
 npm run dev
 # or
 yarn dev
+```
+
+### \*_Runnning Tests_
+
+```bash
+npm test
+# or
+npm test
 ```
 
 ### **API Endpoints**
