@@ -1,18 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { redirect } from "next/navigation";
+import { redirect, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { CheckCircle, Copy, ExternalLink, ArrowLeft } from 'lucide-react';
+import { CheckCircle, Copy, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import confetti from "canvas-confetti";
 
-type SearchParamsType = { code?: string };
+export default function SuccessPage() {
+  const searchParams = useSearchParams();
+  const code = searchParams.get("code");
 
-export default function SuccessPage({ searchParams }: { searchParams: SearchParamsType }) {
   const [copied, setCopied] = useState(false);
-  const { code } = searchParams;
 
   useEffect(() => {
     if (!code) {
@@ -27,7 +27,7 @@ export default function SuccessPage({ searchParams }: { searchParams: SearchPara
       return Math.random() * (max - min) + min;
     }
 
-    const interval: NodeJS.Timeout = setInterval(function() {
+    const interval: NodeJS.Timeout = setInterval(function () {
       const timeLeft = animationEnd - Date.now();
 
       if (timeLeft <= 0) {
@@ -39,12 +39,12 @@ export default function SuccessPage({ searchParams }: { searchParams: SearchPara
       confetti({
         ...defaults,
         particleCount,
-        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
       });
       confetti({
         ...defaults,
         particleCount,
-        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
       });
     }, 250);
 
@@ -59,7 +59,7 @@ export default function SuccessPage({ searchParams }: { searchParams: SearchPara
   };
 
   if (!code) {
-    return null; // just to make TS happy, no functionality
+    return null; // No use but to make TS happy
   }
 
   return (
@@ -79,7 +79,7 @@ export default function SuccessPage({ searchParams }: { searchParams: SearchPara
                 type: "spring",
                 stiffness: 260,
                 damping: 20,
-                delay: 0.1
+                delay: 0.1,
               }}
               className="rounded-full bg-green-100 p-3"
             >
@@ -96,9 +96,7 @@ export default function SuccessPage({ searchParams }: { searchParams: SearchPara
             <div className="mb-6">
               <p className="text-sm font-medium text-gray-500 mb-2">Your discount code:</p>
               <div className="relative">
-                <div
-                  className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-100 rounded-lg p-4 font-mono text-xl font-semibold text-gray-800 tracking-wide"
-                >
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-100 rounded-lg p-4 font-mono text-xl font-semibold text-gray-800 tracking-wide">
                   {code}
                 </div>
                 <button
@@ -127,11 +125,7 @@ export default function SuccessPage({ searchParams }: { searchParams: SearchPara
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button
-                  variant="outline"
-                  className="border-gray-200 text-gray-700 hover:bg-gray-50"
-                  asChild
-                >
+                <Button variant="outline" className="border-gray-200 text-gray-700 hover:bg-gray-50" asChild>
                   <Link href="/campaigns">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Campaigns
@@ -141,7 +135,6 @@ export default function SuccessPage({ searchParams }: { searchParams: SearchPara
             </div>
           </div>
         </div>
-
       </motion.div>
     </div>
   );
