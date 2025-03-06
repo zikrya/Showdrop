@@ -95,9 +95,15 @@ export default function AdminCampaignCodesPage() {
         throw new Error(newCodes.error);
       }
 
-      setCodes([...codes, ...newCodes]);
+      setCodes((prevCodes) => [...prevCodes, ...newCodes]);
       setManualCodes("");
       setGenerateCount(0);
+
+      setStats((prevStats) => ({
+        total: (prevStats?.total || 0) + newCodes.length,
+        claimed: prevStats?.claimed || 0,
+        remaining: (prevStats?.remaining || 0) + newCodes.length,
+      }));
     } catch (err) {
       console.error("Error adding codes:", err);
       alert("Failed to add discount codes. Please try again.");
@@ -260,7 +266,7 @@ export default function AdminCampaignCodesPage() {
                         id="generateCount"
                         type="number"
                         min="1"
-                        value={generateCount}
+                        value={generateCount > 0 ? generateCount.toString() : ""}
                         onChange={(e) => setGenerateCount(Math.max(0, Number(e.target.value) || 0))}
                         className="w-24 text-sm"
                         placeholder="Count"
