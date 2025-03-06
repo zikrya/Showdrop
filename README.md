@@ -21,6 +21,8 @@ This project is a **mini consumer component** of the Showdrop platform. It allow
 3. Codes are assigned to user's emails.
 4. Admins can monitor their campaign stats like total discount codes. claimed codes, or remaining codes
 
+---
+
 ## Tech Stack
 
 - **Frontend**: Next.js 15 (App Router), React, Tailwind CSS, Shadcn
